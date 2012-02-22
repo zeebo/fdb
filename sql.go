@@ -1,5 +1,17 @@
 package fdb
 
+type tableSpec struct {
+	Name string
+	SQL  string
+}
+
+var tables = []*tableSpec{
+	{"objects", objects_sql},
+	{"attributes", attributes_sql},
+	{"object_caches", object_caches_sql},
+	{"object_links", object_links_sql},
+}
+
 var attributes_sql string = `CREATE TABLE attributes (
 	object_id          bigint      NOT NULL,
 	attribute_key      varchar(64) NOT NULL,
