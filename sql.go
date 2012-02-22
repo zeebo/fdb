@@ -1,10 +1,12 @@
 package fdb
 
+//tableSpec represents a table required for fdb to run.
 type tableSpec struct {
 	Name string
 	SQL  string
 }
 
+//tables is the list of tables created by Bootstrap if they do not exist.
 var tables = []*tableSpec{
 	{"objects", objects_sql},
 	{"attributes", attributes_sql},

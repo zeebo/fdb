@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+//Serializer is a type that knows how to serialize and unserialize itself to a
+//table column. This way arbitrary types can be stored as a field in the database.
 type Serializer interface {
 	Serialize() []byte
 	Unserialize([]byte) error
