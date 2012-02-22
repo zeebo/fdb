@@ -2,29 +2,31 @@ package fdb
 
 import "database/sql"
 
-var defaultWrapper = new(Wrapper)
+//DefaultWrapper is used by the package level functions. Must call Bootstrap before
+//it can be used.
+var DefaultWrapper = new(Wrapper)
 
-//SetPreview calls SetPreview on the defaultWrapper
-func SetPreview(preview bool) { defaultWrapper.SetPreview(preview) }
+//SetPreview calls SetPreview on the default Wrapper
+func SetPreview(preview bool) { DefaultWrapper.SetPreview(preview) }
 
-//Load calls Load on the defaultWrapper
-func Load(obj interface{}, id int) error { return defaultWrapper.Load(obj, id) }
+//Load calls Load on the default Wrapper
+func Load(obj interface{}, id int) error { return DefaultWrapper.Load(obj, id) }
 
-//Update calls Update on the defaultWrapper
-func Update(obj interface{}) error { return defaultWrapper.Update(obj) }
+//Update calls Update on the default Wrapper
+func Update(obj interface{}) error { return DefaultWrapper.Update(obj) }
 
-//Links calls Links on the defaultWrapper
-func Links(base interface{}, links interface{}) error { return defaultWrapper.Links(base, links) }
+//Links calls Links on the default Wrapper
+func Links(base interface{}, links interface{}) error { return DefaultWrapper.Links(base, links) }
 
-//Link calls Link on the defaultWrapper
-func Link(first, second interface{}) error { return defaultWrapper.Link(first, second) }
+//Link calls Link on the default Wrapper
+func Link(first, second interface{}) error { return DefaultWrapper.Link(first, second) }
 
-//Unlink calls Unlink on the defaultWrapper
-func Unlink(first, second interface{}) error { return defaultWrapper.Unlink(first, second) }
+//Unlink calls Unlink on the default Wrapper
+func Unlink(first, second interface{}) error { return DefaultWrapper.Unlink(first, second) }
 
-//Bootstrap calls Bootstrap on the defaultWrapper. Must be called before any other function, and only can be run once.
-//To change the underlying connection for the defaultWrapper, call Reset.
-func Bootstrap(conn *sql.DB) error { return defaultWrapper.Bootstrap(conn) }
+//Bootstrap calls Bootstrap on the default Wrapper. Must be called before any other function, and only can be run once.
+//To change the underlying connection for the default Wrapper, call Reset.
+func Bootstrap(conn *sql.DB) error { return DefaultWrapper.Bootstrap(conn) }
 
-//Reset resets the defaultWrapper to an uninitialized state. Must call Bootstrap again.
-func Reset() { defaultWrapper = new(Wrapper) }
+//Reset resets the default Wrapper to an uninitialized state. Must call Bootstrap again.
+func Reset() { DefaultWrapper = new(Wrapper) }
