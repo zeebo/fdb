@@ -169,9 +169,11 @@ func (w *Wrapper) Load(obj interface{}, id int) (err error) {
 		return fmt.Errorf("%T is not a struct type", obj)
 	}
 
-	//make sure we have an id
-	if _, err = getId(rv); err != nil {
-		return
+	//make sure we have an id and store the value for the field so we can set
+	//it later
+	idFld := rv.FieldByName("ID")
+	if !idFld.IsValid() || idFld.Kind() != reflect.Int {
+		return fmt.Errorf("%T is missing a field `ID int`", rv.Type())
 	}
 
 	//get the name of our type
