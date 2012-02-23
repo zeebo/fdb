@@ -24,9 +24,7 @@ func Link(first, second interface{}) error { return DefaultWrapper.Link(first, s
 //Unlink calls Unlink on the default Wrapper
 func Unlink(first, second interface{}) error { return DefaultWrapper.Unlink(first, second) }
 
-//Bootstrap calls Bootstrap on the default Wrapper. Must be called before any other function, and only can be run once.
-//To change the underlying connection for the default Wrapper, call Reset.
+//Bootstrap calls Bootstrap on the default Wrapper. Must be called before any other function.
+//Sets the underlying connection and for the first time Bootstrap is called on that connection
+//it checks for and creates any tables for the system.
 func Bootstrap(conn *sql.DB) error { return DefaultWrapper.Bootstrap(conn) }
-
-//Reset resets the default Wrapper to an uninitialized state. Must call Bootstrap again.
-func Reset() { DefaultWrapper = new(Wrapper) }

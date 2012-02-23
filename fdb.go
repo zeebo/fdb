@@ -55,6 +55,42 @@ func New(conn *sql.DB, preview bool) (w *Wrapper, err error) {
 	return
 }
 
+//Bootstrap sets the Wrappers underyling connection and checks it for the
+//existance of tables, creating them if necessary. Subsequent calls with the
+//same connection pointer do not recheck for tables.
+func (w *Wrapper) Bootstrap(conn *sql.DB) (err error) {
+	w.connLock.Lock()
+	defer w.connLock.Unlock()
+
+	//if we have a new connection recheck the tables
+	if conn != w.connection {
+		w.doer = sync.Once{}
+	}
+
+	w.doer.Do(func() {
+		w.connection = conn
+		for _, table := range tables {
+			if err = w.check(table); err != nil {
+				return
+			}
+		}
+	})
+	return
+}
+
+//helper for Bootstrap. Assumes the lock has already been taken
+func (w *Wrapper) check(spec *tableSpec) (err error) {
+	res, err := w.connection.Query(fmt.Sprintf("SELECT null FROM %s", spec.Name))
+	if res != nil {
+		defer res.Close()
+	}
+	if err == nil {
+		return
+	}
+	_, err = w.connection.Exec(spec.SQL)
+	return
+}
+
 //examineDB attempts to prepare a bunch of statements and returns which database
 //type the database is.
 func examineDB(conn *sql.DB) dbType {
@@ -670,40 +706,4 @@ func differs(data reflect.Value, dbval []byte) bool {
 		}
 	}
 	return false
-}
-
-//Bootstrap sets the Wrappers underyling connection and checks it for the
-//existance of tables, creating them if necessary. Subsequent calls with the
-//same connection pointer do not recheck for tables.
-func (w *Wrapper) Bootstrap(conn *sql.DB) (err error) {
-	w.connLock.Lock()
-	defer w.connLock.Unlock()
-
-	//if we have a new connection recheck the tables
-	if conn != w.connection {
-		w.doer = sync.Once{}
-	}
-
-	w.doer.Do(func() {
-		w.connection = conn
-		for _, table := range tables {
-			if err = w.check(table); err != nil {
-				return
-			}
-		}
-	})
-	return
-}
-
-//helper for Bootstrap. Assumes the lock has already been taken
-func (w *Wrapper) check(spec *tableSpec) (err error) {
-	res, err := w.connection.Query(fmt.Sprintf("SELECT null FROM %s", spec.Name))
-	if res != nil {
-		defer res.Close()
-	}
-	if err == nil {
-		return
-	}
-	_, err = w.connection.Exec(spec.SQL)
-	return
 }
