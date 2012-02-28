@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/zeebo/pq.go"
 	_ "github.com/ziutek/mymysql/godrv"
+	"reflect"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func (s *serialTest) Unserialize([]byte) (err error) { *s = true; return }
 
 type MyThing struct {
 	ID int
-	S  *serialTest
+	S  serialTest
 }
 
 func TestSerializer(t *testing.T) {
@@ -24,20 +25,18 @@ func TestSerializer(t *testing.T) {
 	}
 	defer w.connection.Close()
 
-	x := MyThing{
-		S: new(serialTest),
-	}
+	var x MyThing
 	if err := w.Update(&x); err != nil {
 		t.Fatal(err)
 	}
-	if !bool(*x.S) {
+	if !bool(x.S) {
 		t.Fatal("Didn't serialize")
 	}
 	var y MyThing
 	if err := w.Load(&y, x.ID); err != nil {
 		t.Fatal(err)
 	}
-	if !bool(*y.S) {
+	if !bool(y.S) {
 		t.Fatal("Didn't unserialize")
 	}
 }
@@ -47,6 +46,30 @@ type User struct {
 	Email    string
 	Password string
 	Salt     string
+}
+
+func TestSimpleUser(t *testing.T) {
+	w, err := newPostgres()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.connection.Close()
+
+	x := User{
+		Email:    "foo@bar.com",
+		Password: "barrzz",
+		Salt:     "fasdfasdf",
+	}
+	if err := w.Update(&x); err != nil {
+		t.Fatal(err)
+	}
+	var y User
+	if err := w.Load(&y, x.ID); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(x, y) {
+		t.Fatalf("Expected %+v got %+v", x, y)
+	}
 }
 
 func newMysql() (*Wrapper, error) {

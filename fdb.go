@@ -392,7 +392,7 @@ func (w *Wrapper) Update(obj interface{}) (err error) {
 
 			//check to see if the field is a Serializer
 			//little wacky but you should be able to figure it out
-			data := fld.Interface()
+			data := fld.Addr().Interface()
 			if ser, ok := data.(Serializer); ok {
 				data = ser.Serialize()
 			}
