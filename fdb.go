@@ -3,7 +3,6 @@ package fdb
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"reflect"
 	"regexp"
 	"strings"
@@ -112,8 +111,6 @@ func examineDB(conn *sql.DB) dbType {
 func (w *Wrapper) prepare(query string) string {
 	w.connLock.RLock()
 	defer w.connLock.RUnlock()
-
-	log.Printf("preparing for %d: %q", w.prepareType, query)
 
 	switch w.prepareType {
 	case dbUnknown:

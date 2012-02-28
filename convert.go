@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 //Serializer is a type that knows how to serialize and unserialize itself to a
@@ -34,6 +35,12 @@ func convertAssign(dest interface{}, src []byte) error {
 		bv, err := driver.Bool.ConvertValue(src)
 		if err == nil {
 			*d = bv.(bool)
+		}
+		return err
+	case *time.Time:
+		t, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", string(src))
+		if err == nil {
+			*d = t
 		}
 		return err
 	case Serializer:
