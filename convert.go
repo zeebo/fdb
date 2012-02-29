@@ -38,7 +38,7 @@ func convertAssign(dest interface{}, src []byte) error {
 		}
 		return err
 	case *time.Time:
-		t, err := time.Parse(time.RFC1123, string(src))
+		t, err := time.Parse("2006-01-02 15:04:05.000000 -0700 MST", string(src))
 		if err == nil {
 			*d = t
 		}
